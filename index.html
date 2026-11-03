@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Little Gift</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: Georgia, serif;
+  color: #f8f1e7;
+  background:
+    radial-gradient(ellipse at 50% 42%, #263b60 0%, #142541 42%, #091326 100%);
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.star {
+  position: absolute;
+  color: #f8eac8;
+  opacity: .8;
+  animation: glow 3s infinite alternate;
+}
+
+.star:nth-child(1) { top: 15%; left: 20%; font-size: 15px; }
+.star:nth-child(2) { top: 25%; right: 19%; font-size: 11px; }
+.star:nth-child(3) { bottom: 23%; left: 15%; font-size: 12px; }
+.star:nth-child(4) { bottom: 17%; right: 23%; font-size: 17px; }
+
+@keyframes glow {
+  from { opacity: .3; }
+  to { opacity: 1; }
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 30px;
+}
+
+.moon {
+  width: 105px;
+  height: 105px;
+  margin: 0 auto 42px;
+  border-radius: 50%;
+  background: #f6e8c9;
+  box-shadow: 0 0 35px #f6e8c966,
+              0 0 90px #f6e8c922;
+  position: relative;
+}
+
+.moon::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #192b48;
+  left: 29px;
+  top: -12px;
+}
+
+h1 {
+  font-size: clamp(30px, 8vw, 43px);
+  font-weight: normal;
+  letter-spacing: 1px;
+  margin: 0 0 35px;
+}
+
+a {
+  display: inline-block;
+  padding: 15px 35px;
+  border: 1px solid #e8d9bd;
+  border-radius: 3px;
+  color: #f8f1e7;
+  text-decoration: none;
+  font-size: 16px;
+  letter-spacing: 1px;
+  transition: .3s;
+}
+
+a:hover {
+  background: #f8f1e7;
+  color: #142541;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="sky">
+  <span class="star">✦</span>
+  <span class="star">✧</span>
+  <span class="star">✧</span>
+  <span class="star">✦</span>
+</div>
+
+<main class="content">
+  <div class="moon"></div>
+
+  <h1>A Little Gift For You</h1>
+
+  <a href="#" onclick="event.preventDefault(); alert('Your gift is being prepared for you ♡');">
+    Open Your Gift
+  </a>
+</main>
+
+</body>
+</html>
