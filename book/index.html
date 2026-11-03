@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f1e8"><title>60 يوم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+  <header class="top"><span class="ornament">✳</span><span id="counter">رحلة من ٦٠ يوم</span><button id="editToggle" class="quiet" aria-label="الإعدادات">⚙</button></header>
+  <main>
+    <section id="home" class="home">
+      <div class="cover-art"><span class="leaf leaf-a">❧</span><span class="cover-small">A LITTLE SOMETHING FOR YOU</span><div class="cover-title">ستون يومًا<br><i>من أجلك</i></div><span class="cover-line"></span><span class="cover-bottom">افتحي كل يوم على مهلك</span><span class="leaf leaf-b">❧</span></div>
+      <p class="intro">كل يوم هتلاقي هنا حاجة صغيرة مستنياكي.</p>
+      <button id="enter" class="primary">ابدئي الرحلة <span>←</span></button>
+    </section>
+    <section id="days" class="days hidden"><div class="section-note">اختاري يومًا مفتوحًا</div><div id="dayGrid" class="day-grid"></div></section>
+    <article id="letter" class="letter hidden"><button id="back" class="back">→ رجوع</button><div id="letterContent"></div><div id="mediaArea"></div><div class="letter-nav"><button id="prev" class="quiet">اليوم السابق</button><button id="next" class="quiet">اليوم التالي ←</button></div></article>
+    <section id="editor" class="editor hidden"><button id="closeEditor" class="back">→ رجوع</button><h2>تعديل محتوى الأيام</h2><p class="hint">اكتبي الرسالة من غير عنوان؛ تقدري كمان تضيفي رابط صورة أو ملف صوتي منشور برابط مباشر.</p><label>اليوم<select id="editDay"></select></label><label>نص الرسالة<textarea id="editText" rows="9" placeholder="اكتبي رسالتك هنا..."></textarea></label><label>رابط صورة (اختياري)<input id="editImage" type="url" placeholder="https://..."></label><label>رابط صوت / موسيقى (اختياري)<input id="editAudio" type="url" placeholder="https://..."></label><label>ستايل الصفحة<select id="editStyle"><option value="paper">ورق دافئ</option><option value="garden">حديقة هادئة</option><option value="night">ليل هادئ</option><option value="sunny">نهار مشرق</option><option value="berry">بيرغندي</option></select></label><button id="saveDay" class="primary">حفظ التعديل</button><button id="export" class="secondary">تنزيل نسخة المحتوى المعدّل</button><p id="saveNotice" class="hint"></p></section>
+  </main>
+  <footer>made with care <span>♡</span></footer>
+</div>
+<script src="content.js"></script><script src="app.js"></script>
+</body></html>
