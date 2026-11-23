@@ -10,7 +10,7 @@
   const hint = document.getElementById('hint');
   let opened = false, index = 0, busy = false, touchX = null;
 
-  const pageSrc = n => `assets/page-${String(n + 1).padStart(2, '0')}.jpg`;
+  const pageSrc = n => `page-${String(n + 1).padStart(2, '0')}.jpg`;
 
   function update() {
     counter.textContent = `${index + 1} / ${total}`;
