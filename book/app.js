@@ -13,7 +13,7 @@
   const pageSrc = n => `page-${String(n + 1).padStart(2, '0')}.jpg`;
 
   function update() {
-    counter.textContent = `${index + 1} / ${total}`;
+    counter.textContent = `${index + 1}`;
     prev.disabled = index === 0;
     next.disabled = index === total - 1;
   }
