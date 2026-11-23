@@ -1,0 +1,24 @@
+*{box-sizing:border-box}
+:root{--wine:#651b2b;--cream:#f4e7d4;--gold:#c9a46b;--ink:#4b1821}
+html,body{margin:0;min-height:100%;font-family:Georgia,"Times New Roman",serif}
+body{min-height:100vh;color:var(--ink);background:radial-gradient(ellipse at 12% 15%,rgba(255,255,255,.75),transparent 30%),radial-gradient(ellipse at 88% 78%,rgba(173,119,83,.18),transparent 35%),linear-gradient(135deg,#ead8c3,#f6eadb 48%,#e8d3bd);display:flex;justify-content:center;overflow-x:hidden}
+.shell{width:min(100%,760px);min-height:100vh;padding:20px 12px 28px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px}
+.book-stage{width:min(88vw,440px);aspect-ratio:1229/1536;position:relative;perspective:1800px;filter:drop-shadow(0 20px 20px rgba(59,24,20,.24));touch-action:pan-y}
+.cover,.page{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;backface-visibility:hidden;border-radius:4px}
+.cover{z-index:5;cursor:pointer;transition:transform 1.05s cubic-bezier(.2,.72,.2,1);transform-origin:left center;outline:none}
+.cover:focus-visible{outline:2px solid var(--gold);outline-offset:5px}
+.book-stage.open .cover{transform:rotateY(-105deg);pointer-events:none}
+.page{opacity:0;visibility:hidden;object-fit:contain}
+.page.active{opacity:1;visibility:visible}
+.page.flip-out{animation:flipOut .72s ease-in forwards;transform-origin:left center}
+.page.flip-in{animation:flipIn .72s ease-out both;transform-origin:left center}
+@keyframes flipOut{to{transform:rotateY(-88deg);opacity:.28}}
+@keyframes flipIn{from{transform:rotateY(88deg);opacity:.28}to{transform:rotateY(0);opacity:1}}
+.controls{display:flex;align-items:center;justify-content:center;gap:14px;direction:ltr}
+.controls button{border:1px solid rgba(101,27,43,.28);background:var(--wine);color:#f5e6d0;border-radius:999px;padding:11px 20px;font-size:14px;cursor:pointer;min-width:92px}
+.controls button:disabled{opacity:.35;cursor:default}
+.counter{font:13px Tahoma,Arial,sans-serif;color:#805d51;min-width:62px;text-align:center}
+.hint{font:13px Tahoma,Arial,sans-serif;color:#805d51;text-align:center;min-height:20px;margin:0}
+.back{font:12px Tahoma,Arial,sans-serif;color:#805d51;text-decoration:none;border-bottom:1px solid #bda28d;padding-bottom:2px}
+@media(max-width:480px){.shell{padding:16px 8px 24px;gap:11px}.book-stage{width:min(94vw,390px)}.controls{gap:8px}.controls button{padding:10px 14px;min-width:82px}}
+@media(prefers-reduced-motion:reduce){.cover,.page{transition:none!important}.page.flip-out,.page.flip-in{animation:none!important}}
