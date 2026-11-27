@@ -1,5 +1,5 @@
 (() => {
-  const total = 23;
+  const total = 22;
   const stage = document.getElementById('bookStage');
   const cover = document.getElementById('cover');
   const current = document.getElementById('currentPage');
