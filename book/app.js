@@ -14,28 +14,15 @@
   let busy = false;
   let touchX = null;
 
-  function imageExists(src) {
-    return new Promise(resolve => {
-      const image = new Image();
-      image.onload = () => resolve(true);
-      image.onerror = () => resolve(false);
-      image.src = src;
-    });
-  }
+  async function loadPages() {
+    const response = await fetch('pages.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error('تعذر تحميل قائمة الصفحات');
+    const data = await response.json();
+    if (!Array.isArray(data.pages)) throw new Error('قائمة الصفحات غير صحيحة');
 
-  async function findPages() {
-    const found = [];
-    // Check each numbered page and support both existing JPG and newer PNG files.
-    for (let number = 1; number <= 999; number += 1) {
-      const base = `page-${String(number).padStart(2, '0')}`;
-      let src = `${base}.jpg`;
-      if (!(await imageExists(src))) {
-        src = `${base}.png`;
-        if (!(await imageExists(src))) break;
-      }
-      found.push(src);
-    }
-    return found;
+    return data.pages
+      .filter(name => typeof name === 'string' && /^page-\d+\.(jpg|jpeg|png|webp)$/i.test(name))
+      .sort((a, b) => Number(a.match(/^page-(\d+)/i)[1]) - Number(b.match(/^page-(\d+)/i)[1]));
   }
 
   function update() {
@@ -47,31 +34,43 @@
 
   async function openBook() {
     if (opened || busy) return;
-    opened = true;
     busy = true;
-    stage.classList.add('open');
     hint.textContent = 'بنجهّز صفحات الكتاب...';
     update();
 
-    pages = await findPages();
-    if (!pages.length) {
-      hint.textContent = 'مش قادرين نلاقي صور صفحات الكتاب. حاولي تحديث الصفحة.';
+    try {
+      pages = await loadPages();
+      if (!pages.length) throw new Error('قائمة الصفحات فارغة');
+
+      index = pages.length - 1;
+      current.onload = () => {
+        current.onload = null;
+        current.onerror = null;
+        opened = true;
+        stage.classList.add('open');
+        current.className = 'page active';
+        hint.textContent = 'استخدمي السابق للرجوع للصفحات الأقدم، أو التالي للتقدم';
+        window.setTimeout(() => {
+          cover.style.visibility = 'hidden';
+          busy = false;
+          update();
+        }, 1080);
+        update();
+      };
+      current.onerror = () => {
+        current.onload = null;
+        current.onerror = null;
+        busy = false;
+        hint.textContent = 'في مشكلة في تحميل صورة أحدث صفحة. حاولي تحديث الصفحة.';
+        update();
+      };
+      current.src = pages[index];
+    } catch (error) {
       busy = false;
+      hint.textContent = 'مش قادرين نحمّل صفحات الكتاب دلوقتي. حاولي تحديث الصفحة.';
       update();
-      return;
+      console.error(error);
     }
-
-    // Open directly on the newest available page.
-    index = pages.length - 1;
-    current.src = pages[index];
-    current.className = 'page active';
-    hint.textContent = 'استخدمي السابق والتالي أو اسحبي الصفحة للتقليب';
-
-    window.setTimeout(() => {
-      cover.style.visibility = 'hidden';
-      busy = false;
-      update();
-    }, 1080);
   }
 
   function turn(direction) {
@@ -81,18 +80,28 @@
 
     busy = true;
     update();
-    incoming.src = pages[target];
-    incoming.className = 'page active flip-in';
-    current.className = 'page active flip-out';
-
-    window.setTimeout(() => {
-      current.src = pages[target];
-      current.className = 'page active';
-      incoming.className = 'page';
-      index = target;
+    incoming.onload = () => {
+      incoming.onload = null;
+      incoming.onerror = null;
+      incoming.className = 'page active flip-in';
+      current.className = 'page active flip-out';
+      window.setTimeout(() => {
+        current.src = pages[target];
+        current.className = 'page active';
+        incoming.className = 'page';
+        index = target;
+        busy = false;
+        update();
+      }, 740);
+    };
+    incoming.onerror = () => {
+      incoming.onload = null;
+      incoming.onerror = null;
       busy = false;
+      hint.textContent = 'تعذر تحميل الصفحة التالية.';
       update();
-    }, 740);
+    };
+    incoming.src = pages[target];
   }
 
   cover.addEventListener('click', openBook);
