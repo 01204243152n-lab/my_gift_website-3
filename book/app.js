@@ -1,5 +1,4 @@
 (() => {
-  const total = 22;
   const stage = document.getElementById('bookStage');
   const cover = document.getElementById('cover');
   const current = document.getElementById('currentPage');
@@ -8,47 +7,101 @@
   const next = document.getElementById('next');
   const counter = document.getElementById('counter');
   const hint = document.getElementById('hint');
-  let opened = false, index = 0, busy = false, touchX = null;
 
-  const pageSrc = n => `page-${String(n + 1).padStart(2, '0')}.jpg`;
+  let pages = [];
+  let opened = false;
+  let index = -1;
+  let busy = false;
+  let touchX = null;
 
-  function update() {
-    counter.textContent = `${index + 1}`;
-    prev.disabled = index === 0;
-    next.disabled = index === total - 1;
+  async function loadPages() {
+    const response = await fetch('pages.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error('تعذر تحميل قائمة الصفحات');
+    const data = await response.json();
+    if (!Array.isArray(data.pages)) throw new Error('قائمة الصفحات غير صحيحة');
+
+    return data.pages
+      .filter(name => typeof name === 'string' && /^page-\d+\.(jpg|jpeg|png|webp)$/i.test(name))
+      .sort((a, b) => Number(a.match(/^page-(\d+)/i)[1]) - Number(b.match(/^page-(\d+)/i)[1]));
   }
 
-  function openBook() {
+  function update() {
+    const total = pages.length;
+    counter.textContent = total && index >= 0 ? `${index + 1} / ${total}` : '—';
+    prev.disabled = !opened || busy || index <= 0;
+    next.disabled = !opened || busy || index >= total - 1;
+  }
+
+  async function openBook() {
     if (opened || busy) return;
-    opened = true;
     busy = true;
-    stage.classList.add('open');
-    current.src = pageSrc(0);
-    current.classList.add('active');
-    hint.textContent = 'استخدمي السابق والتالي أو اسحبي الصفحة للتقليب';
-    window.setTimeout(() => {
-      cover.style.visibility = 'hidden';
-      busy = false;
-    }, 1080);
+    hint.textContent = 'بنجهّز صفحات الكتاب...';
     update();
+
+    try {
+      pages = await loadPages();
+      if (!pages.length) throw new Error('قائمة الصفحات فارغة');
+
+      index = pages.length - 1;
+      current.onload = () => {
+        current.onload = null;
+        current.onerror = null;
+        opened = true;
+        stage.classList.add('open');
+        current.className = 'page active';
+        hint.textContent = 'استخدمي السابق للرجوع للصفحات الأقدم، أو التالي للتقدم';
+        window.setTimeout(() => {
+          cover.style.visibility = 'hidden';
+          busy = false;
+          update();
+        }, 1080);
+        update();
+      };
+      current.onerror = () => {
+        current.onload = null;
+        current.onerror = null;
+        busy = false;
+        hint.textContent = 'في مشكلة في تحميل صورة أحدث صفحة. حاولي تحديث الصفحة.';
+        update();
+      };
+      current.src = pages[index];
+    } catch (error) {
+      busy = false;
+      hint.textContent = 'مش قادرين نحمّل صفحات الكتاب دلوقتي. حاولي تحديث الصفحة.';
+      update();
+      console.error(error);
+    }
   }
 
   function turn(direction) {
     if (!opened || busy) return;
     const target = index + direction;
-    if (target < 0 || target >= total) return;
+    if (target < 0 || target >= pages.length) return;
+
     busy = true;
-    incoming.src = pageSrc(target);
-    incoming.className = 'page active flip-in';
-    current.className = 'page active flip-out';
-    window.setTimeout(() => {
-      current.src = pageSrc(target);
-      current.className = 'page active';
-      incoming.className = 'page';
-      index = target;
-      update();
+    update();
+    incoming.onload = () => {
+      incoming.onload = null;
+      incoming.onerror = null;
+      incoming.className = 'page active flip-in';
+      current.className = 'page active flip-out';
+      window.setTimeout(() => {
+        current.src = pages[target];
+        current.className = 'page active';
+        incoming.className = 'page';
+        index = target;
+        busy = false;
+        update();
+      }, 740);
+    };
+    incoming.onerror = () => {
+      incoming.onload = null;
+      incoming.onerror = null;
       busy = false;
-    }, 740);
+      hint.textContent = 'تعذر تحميل الصفحة التالية.';
+      update();
+    };
+    incoming.src = pages[target];
   }
 
   cover.addEventListener('click', openBook);
